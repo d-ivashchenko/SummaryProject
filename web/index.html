@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index_style.css') }}">
+    <meta charset="UTF-8">
+    <title>Summarizator</title>
+</head>
+<body>
+    <h1>SUMMARIZATION ENGINE</h1>
+    <div class = "summary">
+        <form action="/summarize" method="POST" target="_self">
+            <textarea name="user_text" placeholder="Enter your text here..." maxlength="4096">{{user_text}}</textarea>
+            <p class="radio-explanation"><b>Choose summary type:</b><Br>
+                {% if summary_type == "extractive" %}
+                    <input type="radio" name="summary_type" value="extractive" checked="checked"> Extractive summary<Br>
+                    <input type="radio" name="summary_type" value="abstractive"> Abstractive summary<Br>
+                    <input type="radio" name="summary_type" value="header"> Header<Br>
+                {% elif summary_type == "abstractive" %}
+                    <input type="radio" name="summary_type" value="extractive"> Extractive summary<Br>
+                    <input type="radio" name="summary_type" value="abstractive" checked="checked"> Abstractive summary<Br>
+                    <input type="radio" name="summary_type" value="header"> Header<Br>
+                {% elif summary_type == "header" %}
+                    <input type="radio" name="summary_type" value="extractive"> Extractive summary<Br>
+                    <input type="radio" name="summary_type" value="abstractive"> Abstractive summary<Br>
+                    <input type="radio" name="summary_type" value="header"  checked="checked"> Header<Br>
+                {% endif %}
+            </p>
+            <input type="submit" value="Summarize">
+        </form>
+        <form action="/upload" method="POST" target="_self" enctype = "multipart/form-data">
+            <input type=file name="file" id="input_file" accept=".txt" onchange="form.submit()">
+            <label for="input_file" class="import-file-button">Choose file to upload (.txt)</label>
+        </form>
+        <textarea name="summary_result" placeholder="Your summary will be here..." disabled="disabled">{{summary}}</textarea>
+    </div>
+</body>
+</html>
