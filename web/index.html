@@ -12,17 +12,57 @@
             <textarea name="user_text" placeholder="Enter your text here..." maxlength="4096">{{user_text}}</textarea>
             <p class="radio-explanation"><b>Choose summary type:</b><Br>
                 {% if summary_type == "extractive" %}
-                    <input type="radio" name="summary_type" value="extractive" checked="checked"> Extractive summary<Br>
-                    <input type="radio" name="summary_type" value="abstractive"> Abstractive summary<Br>
-                    <input type="radio" name="summary_type" value="header"> Header<Br>
+                    <input type="radio" name="summary_type" value="extractive" checked="checked" onchange="yesnoCheck();"> Extractive summary<Br>
+                    <input type="radio" name="summary_type" value="abstractive" onchange="yesnoCheck();"> Abstractive summary<Br>
+                    <input type="radio" name="summary_type" value="header" onchange="yesnoCheck();"> Header<Br>
                 {% elif summary_type == "abstractive" %}
-                    <input type="radio" name="summary_type" value="extractive"> Extractive summary<Br>
-                    <input type="radio" name="summary_type" value="abstractive" checked="checked"> Abstractive summary<Br>
-                    <input type="radio" name="summary_type" value="header"> Header<Br>
+                    <input type="radio" name="summary_type" value="extractive" onchange="yesnoCheck();"> Extractive summary<Br>
+                    <input type="radio" name="summary_type" value="abstractive" checked="checked" onchange="yesnoCheck();"> Abstractive summary<Br>
+                    <input type="radio" name="summary_type" value="header" onchange="yesnoCheck();"> Header<Br>
                 {% elif summary_type == "header" %}
-                    <input type="radio" name="summary_type" value="extractive"> Extractive summary<Br>
-                    <input type="radio" name="summary_type" value="abstractive"> Abstractive summary<Br>
-                    <input type="radio" name="summary_type" value="header"  checked="checked"> Header<Br>
+                    <input type="radio" name="summary_type" value="extractive" onchange="yesnoCheck();"> Extractive summary<Br>
+                    <input type="radio" name="summary_type" value="abstractive" onchange="yesnoCheck();"> Abstractive summary<Br>
+                    <input type="radio" name="summary_type" value="header"  checked="checked" onchange="yesnoCheck();"> Header<Br>
+                {% endif %}
+                <script>
+                    function yesnoCheck() {
+                        var slider = document.getElementById('length-slider');
+                        var checkedRadioButton = document.querySelector('input[name="summary_type"]:checked');
+                        var text = document.getElementById('parameter-choose');
+                        var output = document.getElementById('param-output');
+
+                        if (checkedRadioButton.value == 'extractive') {
+                            slider.min = "1";
+                            slider.max = "20";
+                            slider.step = "1";
+                            slider.value = "5";
+                            text.innerText="Number of sentences: ";
+                            output.innerHTML = "5"
+                        } else {
+                            slider.min = "0.1";
+                            slider.max = "10";
+                            slider.step = "0.1";
+                            slider.value = "1";
+                            text.innerText="Length penalty: ";
+                            output.innerHTML = "1"
+                        }
+                    }
+                </script>
+            </p>
+            {% if summary_type == "extractive" %}
+                <p class="parameter-choose-name" id="parameter-choose">Number of sentences: <Br></p>
+            {% else %}
+                <p class="parameter-choose-name" id="parameter-choose">Length penalty: <Br></p>
+            {% endif %}
+            <p class="parameter-choose">
+                {% if summary_type == "extractive" %}
+                    <input type="range" min="1" max="20" value="5" class="slider" id="length-slider"
+                           oninput="this.nextElementSibling.value = this.value" name="length_parameter">
+                    Value: <output for="length-slider" id="param-output">5</output>
+                {% else %}
+                    <input type="range" min="0.1" max="10" value="1" step="0.1" class="slider" id="length-slider"
+                           oninput="this.nextElementSibling.value = this.value" name="length_parameter">
+                    Value: <output for="length-slider" id="param-output">1</output>
                 {% endif %}
             </p>
             <input type="submit" value="Summarize">
@@ -31,6 +71,38 @@
             <input type=file name="file" id="input_file" accept=".txt" onchange="form.submit()">
             <label for="input_file" class="import-file-button">Choose file to upload (.txt)</label>
         </form>
+        {% if result_id %}
+        <form action="/evaluate" method="POST" target="_self" enctype = "multipart/form-data">
+            <ul>
+                <li >
+                    <input type="radio" id="mark_option_1" name="summary_mark"
+                           value='{"mark": 1, "id": {{result_id}}}' />
+                    <label for="mark_option_1" class="mark"> 1 </label>
+                </li>
+                <li>
+                    <input type="radio" id="mark_option_2" name="summary_mark"
+                           value='{"mark": 2, "id": {{result_id}}}'/>
+                    <label for="mark_option_2" class="mark"> 2 </label>
+                </li>
+                <li>
+                    <input type="radio" id="mark_option_3" name="summary_mark"
+                           value='{"mark": 3, "id": {{result_id}}}'>
+                    <label for="mark_option_3" class="mark"> 3 </label>
+                </li>
+                <li>
+                    <input type="radio" id="mark_option_4" name="summary_mark"
+                           value='{"mark": 4, "id": {{result_id}}}'>
+                    <label for="mark_option_4" class="mark"> 4</label>
+                </li>
+                <li>
+                    <input type="radio" id="mark_option_5" name="summary_mark"
+                           value='{"mark": 5, "id": {{result_id}}}'>
+                    <label for="mark_option_5" class="mark"> 5</label>
+                </li>
+            </ul>
+            <input type="submit" name="mark_submit" value="Evaluate summary">
+        </form>
+        {% endif %}
         <textarea name="summary_result" placeholder="Your summary will be here..." disabled="disabled">{{summary}}</textarea>
     </div>
 </body>

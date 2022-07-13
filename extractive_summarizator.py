@@ -24,10 +24,10 @@ class KLSummarizer:
             lemmatized_sentence = [self.lemmatizer.lemmatize(word) for word in filtered_sentence]
             lemmatized_sentences.append(lemmatized_sentence)
 
-        return sentences, lemmatized_sentences
+        return sentences, pretokenized_sentences, lemmatized_sentences
 
     def summarize(self, document, n_sentences):
-        sentences, tokenized_sentences = self.decompose(document)
+        sentences, _ , tokenized_sentences = self.decompose(document)
         document_size = len(sentences)
         summary_size = min(document_size, n_sentences)
         summary_sentences = self._kl_summary(sentences, tokenized_sentences, summary_size)

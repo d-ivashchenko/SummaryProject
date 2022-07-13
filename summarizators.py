@@ -35,7 +35,22 @@ class Summarizator:
         nltk.download('wordnet')
         nltk.download('omw-1.4')
 
-    def generate_header(self, text):
+        punctuation = ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=',
+                       '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~']
+        stop_words = stopwords.words('english')
+        lemmatizer = WordNetLemmatizer()
+        self.kl_summarizer = KLSummarizer(sent_tokenize, word_tokenize, lemmatizer, stop_words, punctuation)
+
+    def get_stats(self, text):
+        _, sentences, _ = self.kl_summarizer.decompose(text)
+        n_sentences = len(sentences)
+
+        words = [word for sentence in sentences for word in sentence]
+        n_words = len(words)
+
+        return n_sentences, n_words
+
+    def generate_header(self, text, length_penalty=1):
         input_ids = self.header_tokenizer(
             [self.whitespace_handler(text)],
             return_tensors="pt",
@@ -49,7 +64,7 @@ class Summarizator:
             min_length=10,
             no_repeat_ngram_size=2,
             num_beams=4,
-            length_penalty=1
+            length_penalty=length_penalty
         )[0]
 
         text_header = self.header_tokenizer.decode(
@@ -60,7 +75,7 @@ class Summarizator:
 
         return text_header
 
-    def generate_abstractive_summary(self, text):
+    def generate_abstractive_summary(self, text, length_penalty=1):
         preprocessed_text = self.whitespace_handler(text)
         prepared_text = "summarize: " + preprocessed_text
 
@@ -73,11 +88,11 @@ class Summarizator:
 
         output_ids = self.abstractive_summarizer.generate(
             input_ids=input_ids,
-            max_length=10000,
+            max_length=1000,
             min_length=100,
             no_repeat_ngram_size=2,
             num_beams=4,
-            length_penalty=0.2
+            length_penalty=length_penalty
         )[0]
 
         abstractive_summary = self.abstractive_tokenizer.decode(
@@ -88,14 +103,8 @@ class Summarizator:
 
         return abstractive_summary
 
-    def generate_extractive_summary(self, text):
-        punctuation = ['!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=',
-                       '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~']
-        stop_words = stopwords.words('english')
-        lemmatizer = WordNetLemmatizer()
-
-        kl_summarizer = KLSummarizer(sent_tokenize, word_tokenize, lemmatizer, stop_words, punctuation)
-        extractive_summary = kl_summarizer.summarize(text, 7)
+    def generate_extractive_summary(self, text, num_sentences=5):
+        extractive_summary = self.kl_summarizer.summarize(text, num_sentences)
 
         return extractive_summary
 
