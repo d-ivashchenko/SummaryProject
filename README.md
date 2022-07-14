@@ -8,7 +8,7 @@ You can summarize texts with 3 different approaches using 3 different models:
 
 ## Setup
 1. Download the repository on your local machine.
-2. Install all the packages listed in the `requirements.txt` file.
+2. The project was created on Python 3.7, so using this version is strongly recommended. Install all the packages listed in the `requirements.txt` file.
 3. Download archives `abstractive_model.rar` and `header_model.rar` from [here](https://drive.google.com/drive/folders/11VVTTNYCIeoabGCpzzoplFdCdsVDJ_sH?usp=sharing), unpack the archives and place the content in the `abstractive_model` and `header_model` folders correspondingly before running the project.
 
 ## Usage
