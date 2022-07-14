@@ -92,10 +92,14 @@ def upload_file():
 @app.route('/evaluate', methods=['POST'])
 def evaluate():
     user_data = request.form.to_dict()
-    mark_data = user_data['summary_mark']
-    mark_data = ast.literal_eval(mark_data)
-    mark = mark_data['mark']
-    result_id = mark_data['id']
+    try:
+        mark_data = user_data['summary_mark']
+        mark_data = ast.literal_eval(mark_data)
+        mark = mark_data['mark']
+        result_id = mark_data['id']
+    except KeyError:
+        mark = None
+        result_id = 0
 
     connection = db_engine.connect()
 
